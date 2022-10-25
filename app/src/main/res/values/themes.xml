@@ -1,0 +1,28 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.P1Monitor" parent="Theme.MaterialComponents.DayNight">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/piyellow</item>
+        <item name="colorPrimaryVariant">@color/piyellow</item>
+        <item name="colorOnPrimary">@color/pilightgrey</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/pigreen</item>
+        <item name="colorSecondaryVariant">@color/pigreen</item>
+        <item name="colorOnSecondary">@color/pilightgrey</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="colorButtonNormal">@color/buttonColor</item>
+        <item name="android:windowBackground">@color/pigrey</item>
+        <item name="toolbarStyle">@style/MyToolbar</item>
+        <item name="materialThemeOverlay">@style/ButtonThemeOverlay</item>
+    </style>
+    <style name="MyToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextColor">@color/pidarkgrey</item>
+        <item name="colorPrimary">@color/pigreen</item>
+    </style>
+    <style name="ButtonThemeOverlay">
+        <item name="colorPrimary">@color/pigreen</item>
+        <item name="backgroundTint">@color/pigreen</item>
+    </style>
+</resources>

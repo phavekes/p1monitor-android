@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="pigreen">#98D023</color>
+    <color name="piyellow">#F2BA0F</color>
+    <color name="pidarkgrey">#384042</color>
+    <color name="pilightgrey">#F5F5F5</color>
+    <color name="pigrey">#DDDDDD</color>
+    <color name="buttonColor">#98D023</color>
+    <color name="buttonColordark">#F2BA0F</color>
+    <color name="backgrounddark">#384042</color>
+</resources>

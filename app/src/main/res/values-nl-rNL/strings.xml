@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">P1 Monitor</string>
+    <string name="current_power_consumption">Actueel stroomverbruik</string>
+    <string name="current_power_production">Actuele teruglevering</string>
+    <string name="settings">Instellingen</string>
+</resources>
