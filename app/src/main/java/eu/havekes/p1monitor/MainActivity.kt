@@ -1,6 +1,5 @@
 package eu.havekes.p1monitor
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -34,10 +33,21 @@ data class Smartmeter(
     val TIMESTAMP_lOCAL:        String
 )
 
+data class PowerGas(
+    val CONSUMPTION_DELTA_KWH:      Float,
+    val CONSUMPTION_GAS_DELTA_M3:   Float
+)
+
 interface SmartmeterApi {
     @Headers("X-APIkey: 84C586FD55D0D973E307")
     @GET("api/v1/smartmeter?limit=1&sort=dec&json=object&round=on")
     suspend fun getSmartmeter() : Response<List<Smartmeter>>
+}
+
+interface PowerGasApi {
+    @Headers("X-APIkey: 84C586FD55D0D973E307")
+    @GET("api/v1/powergas/day?limit=1&sort=dec&json=object&round=off")
+    suspend fun getPowerGas() : Response<List<PowerGas>>
 }
 
 object RetrofitHelper {
@@ -63,8 +73,13 @@ class MainActivity : AppCompatActivity() {
 
         var currentPower: TextView = findViewById(R.id.currentPower)
         var productionPower: TextView = findViewById(R.id.productionPower)
+        var todayPower: TextView = findViewById(R.id.todayPower)
+        var todayGas: TextView = findViewById(R.id.todayGas)
+
+
         try {
             updateCurrent(currentPower, productionPower)
+            updateToday(todayPower, todayGas)
         } catch (e:IllegalArgumentException){
              Log.e("error", e.toString())
              Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
@@ -75,8 +90,12 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed(runnable!!, delay.toLong())
             var currentPower: TextView = findViewById(R.id.currentPower)
             var productionPower: TextView = findViewById(R.id.productionPower)
+            var todayPower: TextView = findViewById(R.id.todayPower)
+            var todayGas: TextView = findViewById(R.id.todayGas)
+
             try {
                 updateCurrent(currentPower, productionPower)
+                updateToday(todayPower,todayGas)
             } catch (e:IllegalArgumentException){
                 Log.e("error", e.toString())
                 Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
@@ -100,6 +119,25 @@ fun updateCurrent(currentPower: TextView,productionPower: TextView) {
             Log.d("p1monitor: ", result.body().toString())
             currentPower.text = result.body()?.get(0)?.CONSUMPTION_W.toString() + " Watt"
             productionPower.text = result.body()?.get(0)?.PRODUCTION_W.toString() + " Watt"
+        } catch (e:IllegalArgumentException){
+            Log.e("error", e.toString())
+        }
+    }
+}
+
+fun updateToday(todayPower: TextView, todayGas: TextView) {
+    // launching a new coroutine
+    GlobalScope.launch(Dispatchers.Main) {
+        try {
+            val powerGasApi = RetrofitHelper.getInstance().create(PowerGasApi::class.java)
+            val result = powerGasApi.getPowerGas()
+
+            // Checking the results
+            //[Smartmeter(CONSUMPTION_GAS_M3=7104, CONSUMPTION_KWH_HIGH=11948, CONSUMPTION_KWH_LOW=12003, CONSUMPTION_W=191, PRODUCTION_KWH_HIGH=524, PRODUCTION_KWH_LOW=219, PRODUCTION_W=0, RECORD_IS_PROCESSED=0, TARIFCODE=P, TIMESTAMP_UTC=1666347688, TIMESTAMP_lOCAL=2022-10-21 12:21:28)]
+
+            Log.d("p1monitor: ", result.body().toString())
+            todayPower.text = result.body()?.get(0)?.CONSUMPTION_DELTA_KWH.toString() + " Watt"
+            todayGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
         } catch (e:IllegalArgumentException){
             Log.e("error", e.toString())
         }

@@ -3,4 +3,7 @@
     <string name="current_power_consumption">Current power consumption</string>
     <string name="current_power_production">Current power production</string>
     <string name="settings">Settings</string>
+    <string name="today_power">Power consumption today</string>
+    <string name="placeholer_value">Fetching data</string>
+    <string name="today_gas">Gas consumptuin today</string>
 </resources>

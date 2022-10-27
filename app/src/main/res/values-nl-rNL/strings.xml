@@ -4,4 +4,7 @@
     <string name="current_power_consumption">Actueel stroomverbruik</string>
     <string name="current_power_production">Actuele teruglevering</string>
     <string name="settings">Instellingen</string>
+    <string name="today_power">Stroomverbruik vandaag</string>
+    <string name="placeholer_value">Ophalen info</string>
+    <string name="today_gas">Gasverbruik vandaag</string>
 </resources>
