@@ -1,9 +1,17 @@
 <resources>
     <string name="app_name">P1 Monitor</string>
-    <string name="current_power_consumption">Current power consumption</string>
-    <string name="current_power_production">Current power production</string>
+    <string name="power_production">Power production</string>
     <string name="settings">Settings</string>
-    <string name="today_power">Power consumption today</string>
+    <string name="power_consumption">Power consumption</string>
     <string name="placeholer_value">Fetching data</string>
-    <string name="today_gas">Gas consumptuin today</string>
+    <string name="gas_consumption">"Gas consumption "</string>
+    <string name="month_power">Power consumption this month</string>
+    <string name="month_gas">Gas consumption this month</string>
+    <string name="today_financial">Power costs today</string>
+    <string name="month_financial">Power costs this month</string>
+    <string name="label_now">Now</string>
+    <string name="label_total_today">Totals for today</string>
+    <string name="label_total_month">Totals this month</string>
+    <string name="financial_power">Power costs</string>
+    <string name="financial_gas">Gas costs</string>
 </resources>

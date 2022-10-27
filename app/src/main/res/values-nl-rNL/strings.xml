@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">P1 Monitor</string>
-    <string name="current_power_consumption">Actueel stroomverbruik</string>
-    <string name="current_power_production">Actuele teruglevering</string>
+    <string name="power_production">Teruglevering</string>
     <string name="settings">Instellingen</string>
-    <string name="today_power">Stroomverbruik vandaag</string>
+    <string name="power_consumption">Stroomverbruik</string>
     <string name="placeholer_value">Ophalen info</string>
-    <string name="today_gas">Gasverbruik vandaag</string>
+    <string name="gas_consumption">Gasverbruik</string>
+    <string name="month_power">Stroomverbruik deze maand</string>
+    <string name="month_gas">Gasverbruik deze maand</string>
+    <string name="today_financial">Kosten stroom vandaag</string>
+    <string name="month_financial">Kosten gas deze maand</string>
+    <string name="label_now">Actueel</string>
+    <string name="label_total_today">Totaal vandaag</string>
+    <string name="label_total_month">Totaal deze maand</string>
+    <string name="financial_power">Kosten stroom</string>
+    <string name="financial_gas">Kosten Gas</string>
 </resources>

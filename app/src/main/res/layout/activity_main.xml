@@ -15,12 +15,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="1">
+
             <TableRow>
+
                 <TextView
+                    android:id="@+id/label_usage_now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:paddingTop="10dp"
+                    android:text="@string/label_now"
+                    android:textStyle="bold" />
+            </TableRow>
+            <TableRow>
+            <TextView
                     android:id="@+id/label_usage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/current_power_consumption" />
+                    android:text="@string/power_consumption" />
                 <TextView
                     android:id="@+id/currentPower"
                     android:layout_width="wrap_content"
@@ -38,7 +50,7 @@
                     android:id="@+id/label_prod"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/current_power_production"/>
+                    android:text="@string/power_production"/>
                 <TextView
                     android:id="@+id/productionPower"
                     android:layout_width="wrap_content"
@@ -53,10 +65,21 @@
             </TableRow>
             <TableRow>
                 <TextView
+                    android:id="@+id/label_usage_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:paddingTop="10dp"
+
+                    android:text="@string/label_total_today"
+                    android:textStyle="bold" />
+            </TableRow>
+            <TableRow>
+                <TextView
                     android:id="@+id/label_kwh_today"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/today_power"/>
+                    android:text="@string/power_consumption"/>
                 <TextView
                     android:id="@+id/todayPower"
                     android:layout_width="wrap_content"
@@ -74,7 +97,7 @@
                     android:id="@+id/label_m3_today"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/today_gas"/>
+                    android:text="@string/gas_consumption"/>
                 <TextView
                     android:id="@+id/todayGas"
                     android:layout_width="wrap_content"
@@ -87,6 +110,127 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_financial_power_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/financial_power"/>
+                <TextView
+                    android:id="@+id/todayFinancialPower"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_financial_gas_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/financial_gas"/>
+                <TextView
+                    android:id="@+id/todayFinancialGas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_usage_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:paddingTop="10dp"
+                    android:text="@string/label_total_month"
+                    android:textStyle="bold" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_kwh_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/power_consumption"/>
+                <TextView
+                    android:id="@+id/monthPower"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_m3_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gas_consumption"/>
+                <TextView
+                    android:id="@+id/monthGas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_financial_power_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/financial_power"/>
+                <TextView
+                    android:id="@+id/monthFinancialPower"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/label_financial_gas_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/financial_gas"/>
+                <TextView
+                    android:id="@+id/monthFinancialGas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+
+
+
         </TableLayout>
         <!--button for opening settings activity-->
         <Button
