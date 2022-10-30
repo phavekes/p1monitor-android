@@ -1,12 +1,21 @@
 package eu.havekes.p1monitor
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -14,11 +23,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import kotlin.math.roundToInt
-
-
-//https://power.havekes.eu/api/v1/smartmeter?limit=1&sort=dec&json=object&round=on
 
 data class Smartmeter(
     val CONSUMPTION_GAS_M3:     Int,
@@ -36,7 +43,8 @@ data class Smartmeter(
 
 data class PowerGas(
     val CONSUMPTION_DELTA_KWH:      Float,
-    val CONSUMPTION_GAS_DELTA_M3:   Float
+    val CONSUMPTION_GAS_DELTA_M3:   Float,
+    val PRODUCTION_DELTA_KWH:       Float
 )
 
 data class Financial(
@@ -46,36 +54,30 @@ data class Financial(
 )
 
 interface SmartmeterApi {
-    @Headers("X-APIkey: 84C586FD55D0D973E307")
     @GET("api/v1/smartmeter?limit=1&sort=dec&json=object&round=on")
-    suspend fun getSmartmeter() : Response<List<Smartmeter>>
+    suspend fun getSmartmeter(@Header("X-APIkey") apikey: String) : Response<List<Smartmeter>>
 }
 
 interface PowerGasDayApi {
-    @Headers("X-APIkey: 84C586FD55D0D973E307")
     @GET("api/v1/powergas/day?limit=1&sort=dec&json=object&round=off")
-    suspend fun getPowerGas() : Response<List<PowerGas>>
+    suspend fun getPowerGas(@Header("X-APIkey") apikey: String) : Response<List<PowerGas>>
 }
 interface PowerGasMonthApi {
-    @Headers("X-APIkey: 84C586FD55D0D973E307")
     @GET("api/v1/powergas/month?limit=1&sort=dec&json=object&round=off")
-    suspend fun getPowerGas() : Response<List<PowerGas>>
+    suspend fun getPowerGas(@Header("X-APIkey") apikey: String) : Response<List<PowerGas>>
 }
 
 interface FinancialDayApi {
-    @Headers("X-APIkey: 84C586FD55D0D973E307")
     @GET("api/v1/financial/day?limit=1&sort=dec&json=object&round=off")
-    suspend fun getFinancial() : Response<List<Financial>>
+    suspend fun getFinancial(@Header("X-APIkey") apikey: String) : Response<List<Financial>>
 }
 interface FinancialMonthApi {
-    @Headers("X-APIkey: 84C586FD55D0D973E307")
     @GET("api/v1/financial/month?limit=1&sort=dec&json=object&round=off")
-    suspend fun getFinancial() : Response<List<Financial>>
+    suspend fun getFinancial(@Header("X-APIkey") apikey: String) : Response<List<Financial>>
 }
 
 object RetrofitHelper {
-    var baseUrl: String = "https://p1.havekes.eu/"
-    fun getInstance(): Retrofit {
+    fun getInstance(baseUrl: String): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             // we need to add converter factory to
@@ -85,33 +87,57 @@ object RetrofitHelper {
 }
 
 class MainActivity : AppCompatActivity() {
-    var handler: Handler = Handler()
+    var handler: Handler = Handler(Looper.getMainLooper())
     var runnable: Runnable? = null
     var delay = 10000
     lateinit var settingsBtn: Button
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.settings_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.setting -> {
+                //Toast.makeText(this,"You are getting ready for android preferences",Toast.LENGTH_LONG).show()
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var currentPower: TextView = findViewById(R.id.currentPower)
-        var productionPower: TextView = findViewById(R.id.productionPower)
-        var todayPower: TextView = findViewById(R.id.todayPower)
-        var todayGas: TextView = findViewById(R.id.todayGas)
-        var monthPower: TextView = findViewById(R.id.monthPower)
-        var monthGas: TextView = findViewById(R.id.monthGas)
-        var todayFinancialPower: TextView = findViewById(R.id.todayFinancialPower)
-        var todayFinancialGas: TextView = findViewById(R.id.todayFinancialGas)
-        var monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
-        var monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
+        val prefs =  PreferenceManager.getDefaultSharedPreferences(this)
+        val baseUrl = prefs.getString("hostname","")
+        val apikey = prefs.getString("apikey","").toString()
+
+        val currentPower: TextView = findViewById(R.id.currentPower)
+        val productionPower: TextView = findViewById(R.id.productionPower)
+        val todayPower: TextView = findViewById(R.id.todayPower)
+        val todayProduction: TextView = findViewById(R.id.todayProduction)
+        val todayGas: TextView = findViewById(R.id.todayGas)
+        val monthPower: TextView = findViewById(R.id.monthPower)
+        val monthProduction: TextView = findViewById(R.id.monthProduction)
+        val monthGas: TextView = findViewById(R.id.monthGas)
+        val todayFinancialPower: TextView = findViewById(R.id.todayFinancialPower)
+        val todayFinancialGas: TextView = findViewById(R.id.todayFinancialGas)
+        val monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
+        val monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
 
 
         try {
-            updateCurrent(currentPower, productionPower)
-            updateToday(todayPower, todayGas)
-            updateMonth(monthPower,monthGas)
-            updateFinancialToday(todayFinancialPower,todayFinancialGas)
-            updateFinancialMonth(monthFinancialPower,monthFinancialGas)
+            if (baseUrl != null) {
+                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext)
+                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey)
+                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey)
+                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey)
+                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey)
+            }
         } catch (e:IllegalArgumentException){
              Log.e("error", e.toString())
              Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
@@ -119,24 +145,32 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume() {
         handler.postDelayed(Runnable {
+            val prefs =  PreferenceManager.getDefaultSharedPreferences(this)
+            val baseUrl = prefs.getString("hostname","")
+            val apikey = prefs.getString("apikey","").toString()
+
             handler.postDelayed(runnable!!, delay.toLong())
-            var currentPower: TextView = findViewById(R.id.currentPower)
-            var productionPower: TextView = findViewById(R.id.productionPower)
-            var todayPower: TextView = findViewById(R.id.todayPower)
-            var todayGas: TextView = findViewById(R.id.todayGas)
-            var monthPower: TextView = findViewById(R.id.monthPower)
-            var monthGas: TextView = findViewById(R.id.monthGas)
-            var todayFinancialPower: TextView = findViewById(R.id.todayFinancialPower)
-            var todayFinancialGas: TextView = findViewById(R.id.todayFinancialGas)
-            var monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
-            var monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
+            val currentPower: TextView = findViewById(R.id.currentPower)
+            val productionPower: TextView = findViewById(R.id.productionPower)
+            val todayPower: TextView = findViewById(R.id.todayPower)
+            val todayProduction: TextView = findViewById(R.id.todayProduction)
+            val todayGas: TextView = findViewById(R.id.todayGas)
+            val monthPower: TextView = findViewById(R.id.monthPower)
+            val monthProduction: TextView = findViewById(R.id.monthProduction)
+            val monthGas: TextView = findViewById(R.id.monthGas)
+            val todayFinancialPower: TextView = findViewById(R.id.todayFinancialPower)
+            val todayFinancialGas: TextView = findViewById(R.id.todayFinancialGas)
+            val monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
+            val monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
 
             try {
-                updateCurrent(currentPower, productionPower)
-                updateToday(todayPower,todayGas)
-                updateMonth(monthPower,monthGas)
-                updateFinancialToday(todayFinancialPower,todayFinancialGas)
-                updateFinancialMonth(monthFinancialPower,monthFinancialGas)
+                if (baseUrl != null) {
+                    updateCurrent(currentPower, productionPower, baseUrl,apikey, applicationContext )
+                    updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey)
+                    updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey)
+                    updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey)
+                    updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey)
+                }
             } catch (e:IllegalArgumentException){
                 Log.e("error", e.toString())
                 Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
@@ -147,103 +181,111 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun updateCurrent(currentPower: TextView,productionPower: TextView) {
+@SuppressLint("SetTextI18n")
+@OptIn(DelicateCoroutinesApi::class)
+fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: String, apikey: String, applicationContext: Context) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val smartmeterApi = RetrofitHelper.getInstance().create(SmartmeterApi::class.java)
-            val result = smartmeterApi.getSmartmeter()
-
-            // Checking the results
-            //[Smartmeter(CONSUMPTION_GAS_M3=7104, CONSUMPTION_KWH_HIGH=11948, CONSUMPTION_KWH_LOW=12003, CONSUMPTION_W=191, PRODUCTION_KWH_HIGH=524, PRODUCTION_KWH_LOW=219, PRODUCTION_W=0, RECORD_IS_PROCESSED=0, TARIFCODE=P, TIMESTAMP_UTC=1666347688, TIMESTAMP_lOCAL=2022-10-21 12:21:28)]
-
+            val smartmeterApi = RetrofitHelper.getInstance(baseUrl).create(SmartmeterApi::class.java)
+            val result = smartmeterApi.getSmartmeter(apikey)
             Log.d("p1monitor: ", result.body().toString())
-            currentPower.text = result.body()?.get(0)?.CONSUMPTION_W.toString() + " Watt"
-            productionPower.text = result.body()?.get(0)?.PRODUCTION_W.toString() + " Watt"
+            if (result.code() == 200) {
+                currentPower.text = result.body()?.get(0)?.CONSUMPTION_W.toString() + " Watt";
+                productionPower.text = result.body()?.get(0)?.PRODUCTION_W.toString() + " Watt"
+            } else {
+                throw IllegalArgumentException("Communication error")
+            }
+        } catch (e:IllegalArgumentException){
+            Log.e("error", e.toString())
+            Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
+
+        }
+    }
+}
+
+@SuppressLint("SetTextI18n")
+@OptIn(DelicateCoroutinesApi::class)
+fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextView, baseUrl: String, apikey: String) {
+    // launching a new coroutine
+    GlobalScope.launch(Dispatchers.Main) {
+        try {
+            val powerGasApi = RetrofitHelper.getInstance(baseUrl).create(PowerGasDayApi::class.java)
+            val result = powerGasApi.getPowerGas(apikey)
+            Log.d("p1monitor: ", result.body().toString())
+            if (result.code() == 200) {
+                todayPower.text = result.body()?.get(0)?.CONSUMPTION_DELTA_KWH.toString() + " kWh"
+                todayProduction.text = result.body()?.get(0)?.PRODUCTION_DELTA_KWH.toString() + " kWh"
+                todayGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
+            }
         } catch (e:IllegalArgumentException){
             Log.e("error", e.toString())
         }
     }
 }
 
-fun updateToday(todayPower: TextView, todayGas: TextView) {
+@SuppressLint("SetTextI18n")
+@OptIn(DelicateCoroutinesApi::class)
+fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextView, baseUrl: String, apikey: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val powerGasApi = RetrofitHelper.getInstance().create(PowerGasDayApi::class.java)
-            val result = powerGasApi.getPowerGas()
-
-            // Checking the results
-            //[Smartmeter(CONSUMPTION_GAS_M3=7104, CONSUMPTION_KWH_HIGH=11948, CONSUMPTION_KWH_LOW=12003, CONSUMPTION_W=191, PRODUCTION_KWH_HIGH=524, PRODUCTION_KWH_LOW=219, PRODUCTION_W=0, RECORD_IS_PROCESSED=0, TARIFCODE=P, TIMESTAMP_UTC=1666347688, TIMESTAMP_lOCAL=2022-10-21 12:21:28)]
-
+            val powerGasApi = RetrofitHelper.getInstance(baseUrl).create(PowerGasMonthApi::class.java)
+            val result = powerGasApi.getPowerGas(apikey)
             Log.d("p1monitor: ", result.body().toString())
-            todayPower.text = result.body()?.get(0)?.CONSUMPTION_DELTA_KWH.toString() + " kWh"
-            todayGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
+            if (result.code() == 200) {
+                monthPower.text = result.body()?.get(0)?.CONSUMPTION_DELTA_KWH.toString() + " kWh"
+                monthProduction.text = result.body()?.get(0)?.PRODUCTION_DELTA_KWH.toString() + " kWh"
+                monthGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
+            }
         } catch (e:IllegalArgumentException){
             Log.e("error", e.toString())
         }
     }
 }
 
-fun updateMonth(monthPower: TextView, monthGas: TextView) {
+@SuppressLint("SetTextI18n")
+@OptIn(DelicateCoroutinesApi::class)
+fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextView, baseUrl: String, apikey: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val powerGasApi = RetrofitHelper.getInstance().create(PowerGasMonthApi::class.java)
-            val result = powerGasApi.getPowerGas()
-
-            // Checking the results
-            //[Smartmeter(CONSUMPTION_GAS_M3=7104, CONSUMPTION_KWH_HIGH=11948, CONSUMPTION_KWH_LOW=12003, CONSUMPTION_W=191, PRODUCTION_KWH_HIGH=524, PRODUCTION_KWH_LOW=219, PRODUCTION_W=0, RECORD_IS_PROCESSED=0, TARIFCODE=P, TIMESTAMP_UTC=1666347688, TIMESTAMP_lOCAL=2022-10-21 12:21:28)]
-
+            val financialDayApi = RetrofitHelper.getInstance(baseUrl).create(FinancialDayApi::class.java)
+            val result = financialDayApi.getFinancial(apikey)
             Log.d("p1monitor: ", result.body().toString())
-            monthPower.text = result.body()?.get(0)?.CONSUMPTION_DELTA_KWH.toString() + " kWh"
-            monthGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
+            if (result.code() == 200) {
+                val cost = result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!! + result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_LOW!!
+                val roundoffcost = (cost * 100.0).roundToInt() / 100.0
+                todayFinancialPower.text = "€" + roundoffcost.toString()
+                val costsGas = result.body()?.get(0)?.CONSUMPTION_COST_GAS!!
+                val roundoffcostgas = (costsGas * 100.0).roundToInt() / 100.0
+                todayFinancialGas.text = "€" + roundoffcostgas.toString()
+            }
         } catch (e:IllegalArgumentException){
             Log.e("error", e.toString())
         }
     }
 }
 
-fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextView) {
+@SuppressLint("SetTextI18n")
+@OptIn(DelicateCoroutinesApi::class)
+fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextView, baseUrl: String, apikey: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val financialDayApi = RetrofitHelper.getInstance().create(FinancialDayApi::class.java)
-            val result = financialDayApi.getFinancial()
-
-            // Checking the results
-            //[Smartmeter(CONSUMPTION_GAS_M3=7104, CONSUMPTION_KWH_HIGH=11948, CONSUMPTION_KWH_LOW=12003, CONSUMPTION_W=191, PRODUCTION_KWH_HIGH=524, PRODUCTION_KWH_LOW=219, PRODUCTION_W=0, RECORD_IS_PROCESSED=0, TARIFCODE=P, TIMESTAMP_UTC=1666347688, TIMESTAMP_lOCAL=2022-10-21 12:21:28)]
-
+            val financialMonthApi = RetrofitHelper.getInstance(baseUrl).create(FinancialMonthApi::class.java)
+            val result = financialMonthApi.getFinancial(apikey)
             Log.d("p1monitor: ", result.body().toString())
-            val cost=result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!! + result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!!
-            val roundoffcost = (cost * 100.0).roundToInt() / 100.0
-            todayFinancialPower.text = "€"+ roundoffcost.toString()
-            val costsGas=result.body()?.get(0)?.CONSUMPTION_COST_GAS!!
-            val roundoffcostgas = (costsGas * 100.0).roundToInt() / 100.0
-            todayFinancialGas.text =  "€"+ roundoffcostgas.toString()
-        } catch (e:IllegalArgumentException){
-            Log.e("error", e.toString())
-        }
-    }
-}
-
-fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextView) {
-    // launching a new coroutine
-    GlobalScope.launch(Dispatchers.Main) {
-        try {
-            val financialMonthApi = RetrofitHelper.getInstance().create(FinancialMonthApi::class.java)
-            val result = financialMonthApi.getFinancial()
-
-            // Checking the results
-            //[Smartmeter(CONSUMPTION_GAS_M3=7104, CONSUMPTION_KWH_HIGH=11948, CONSUMPTION_KWH_LOW=12003, CONSUMPTION_W=191, PRODUCTION_KWH_HIGH=524, PRODUCTION_KWH_LOW=219, PRODUCTION_W=0, RECORD_IS_PROCESSED=0, TARIFCODE=P, TIMESTAMP_UTC=1666347688, TIMESTAMP_lOCAL=2022-10-21 12:21:28)]
-
-            Log.d("p1monitor: ", result.body().toString())
-            val cost=result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!! + result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!!
-            val roundoffcost = (cost * 100.0).roundToInt() / 100.0
-            monthFinancialPower.text = "€"+ roundoffcost.toString()
-            val costsGas=result.body()?.get(0)?.CONSUMPTION_COST_GAS!!
-            val roundoffcostgas = (costsGas * 100.0).roundToInt() / 100.0
-            monthFinancialGas.text =  "€"+ roundoffcostgas.toString()
+            if (result.code() == 200) {
+                val cost =
+                    result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!! + result.body()
+                        ?.get(0)?.CONSUMPTION_COST_ELECTRICITY_LOW!!
+                val roundoffcost = (cost * 100.0).roundToInt() / 100.0
+                monthFinancialPower.text = "€" + roundoffcost.toString()
+                val costsGas = result.body()?.get(0)?.CONSUMPTION_COST_GAS!!
+                val roundoffcostgas = (costsGas * 100.0).roundToInt() / 100.0
+                monthFinancialGas.text = "€" + roundoffcostgas.toString()
+            }
         } catch (e:IllegalArgumentException){
             Log.e("error", e.toString())
         }

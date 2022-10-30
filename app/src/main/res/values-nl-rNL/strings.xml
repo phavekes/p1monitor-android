@@ -15,4 +15,14 @@
     <string name="label_total_month">Totaal deze maand</string>
     <string name="financial_power">Kosten stroom</string>
     <string name="financial_gas">Kosten Gas</string>
+
+    <string name="KWH">%1$s kWh</string>
+    <string name="WATT">%1$s Watt</string>
+    <string name="M3">%1$s m3</string>
+    <string name="EURO">€ %1$s</string>
+
+    <string name="title_activity_settings">Instellingen</string>
+    <string name="settings_header_server">P1 monitor server</string>
+    <string name="settings_hostname">Hostname</string>
+    <string name="settings_apikey">ApiKey</string>
 </resources>

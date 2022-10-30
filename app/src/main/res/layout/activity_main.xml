@@ -94,6 +94,24 @@
             </TableRow>
             <TableRow>
                 <TextView
+                    android:id="@+id/label_kwh_production_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/power_production"/>
+                <TextView
+                    android:id="@+id/todayProduction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
                     android:id="@+id/label_m3_today"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -176,6 +194,24 @@
             </TableRow>
             <TableRow>
                 <TextView
+                    android:id="@+id/label_kwh_production_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/power_production"/>
+                <TextView
+                    android:id="@+id/monthProduction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="@string/placeholer_value"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </TableRow>
+            <TableRow>
+                <TextView
                     android:id="@+id/label_m3_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -228,17 +264,9 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </TableRow>
-
-
-
         </TableLayout>
         <!--button for opening settings activity-->
-        <Button
-            android:id="@+id/idBtnSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"
-            android:textAllCaps="false" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

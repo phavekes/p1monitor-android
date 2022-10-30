@@ -4,7 +4,7 @@
     <string name="settings">Settings</string>
     <string name="power_consumption">Power consumption</string>
     <string name="placeholer_value">Fetching data</string>
-    <string name="gas_consumption">"Gas consumption "</string>
+    <string name="gas_consumption">Gas consumption</string>
     <string name="month_power">Power consumption this month</string>
     <string name="month_gas">Gas consumption this month</string>
     <string name="today_financial">Power costs today</string>
@@ -14,4 +14,14 @@
     <string name="label_total_month">Totals this month</string>
     <string name="financial_power">Power costs</string>
     <string name="financial_gas">Gas costs</string>
+
+    <string name="KWH">%1$s kWh</string>
+    <string name="WATT">%1$s Watt</string>
+    <string name="M3">%1$s m3</string>
+    <string name="EURO">€ %1$s</string>
+
+    <string name="title_activity_settings">Settings</string>
+    <string name="settings_header_server">P1 Monitor Server</string>
+    <string name="settings_hostname">Hostname</string>
+    <string name="settings_apikey">ApiKey</string>
 </resources>

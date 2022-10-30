@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/settings_header_server" >
+        <EditTextPreference
+            android:defaultValue="https://server.nl/"
+            android:key="hostname"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_hostname" />
+        <EditTextPreference
+            android:defaultValue="ABCD1234"
+            android:key="apikey"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_apikey" />
+    </PreferenceCategory>
+</PreferenceScreen>
