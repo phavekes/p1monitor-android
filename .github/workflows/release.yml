@@ -1,0 +1,80 @@
+name: Release Build
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: recursive
+    - uses: actions/setup-java@v2
+      with:
+        java-version: 11
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Build APK
+      run: ./gradlew assembleRelease
+    - name: Sign APK
+      id: sign_apk
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/apk/release/
+        signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
+        keyPassword: ${{ secrets.KEYPASSWORD }}
+
+    - name: Build App bundle
+      run: ./gradlew bundleRelease
+    - name: Sign App Bundle
+      id: sign_aab
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/bundle/release/
+        signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
+        keyPassword: ${{ secrets.KEYPASSWORD }}
+
+
+    - name: Build Changelog
+      id: changelog
+      uses: ardalanamini/auto-changelog@v3
+
+    - name: Create release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: Release ${{ github.ref }}
+        tag_name: ${{ github.ref }}
+        body: |
+          ${{ steps.changelog.outputs.changelog }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Upload APK
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{steps.sign_apk.outputs.signedReleaseFile}}
+        asset_name: pimonitor-${{ github.ref_name }}.apk
+        asset_content_type: application/zip
+    - name: Upload App bundle
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{steps.sign_aab.outputs.signedReleaseFile}}
+        asset_name: p1monitor-${{ github.ref_name }}.aab
+        asset_content_type: application/zip
