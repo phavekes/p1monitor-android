@@ -3,6 +3,17 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+static def generateVersionCode() {
+    def result = "git rev-list HEAD --count".execute().text.trim()
+    if(result.empty) throw new RuntimeException("Could not generate versioncode on this platform? Cmd output: ${result.text}")
+    return result.toInteger()
+}
+
+static def generateVersionName() {
+    def result = "git describe --tags --dirty".execute().text.trim()
+    if(result.empty) throw new RuntimeException("Could not generate versioncode on this platform? Cmd output: ${result.text}")
+    return result
+}
 android {
     namespace 'eu.havekes.p1monitor'
     compileSdk 33
@@ -11,8 +22,8 @@ android {
         applicationId "eu.havekes.p1monitor"
         minSdk 25
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName = generateVersionName()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,13 +47,13 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.preference:preference:1.2.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

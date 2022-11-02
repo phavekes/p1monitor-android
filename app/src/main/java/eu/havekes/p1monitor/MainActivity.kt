@@ -3,11 +3,9 @@ package eu.havekes.p1monitor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings.System.getString
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -25,7 +23,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Headers
 import kotlin.math.roundToInt
 
 data class Smartmeter(
@@ -103,6 +100,11 @@ class MainActivity : AppCompatActivity() {
             R.id.setting -> {
                 //Toast.makeText(this,"You are getting ready for android preferences",Toast.LENGTH_LONG).show()
                 val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.about -> {
+                //Toast.makeText(this,"You are getting ready for android preferences",Toast.LENGTH_LONG).show()
+                val intent = Intent(this, AboutActivity::class.java)
                 startActivity(intent)
             }
         }

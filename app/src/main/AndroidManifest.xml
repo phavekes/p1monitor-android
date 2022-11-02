@@ -15,19 +15,25 @@
         android:theme="@style/Theme.P1Monitor"
         tools:targetApi="31">
         <activity
+            android:name=".AboutActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings">
             <meta-data
                 android:name="android.app.lib_name"
-                android:value=""
-                android:parentActivityName=".MainActivity" />
+                android:parentActivityName=".MainActivity"
+                android:value="" />
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
-            >
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -3,7 +3,6 @@ package eu.havekes.p1monitor
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 
@@ -29,10 +28,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == "theme"){
-            val pref = sharedPreferences?.getString(key,"1")
 
-        }
     }
 
     override fun onDestroy() {
