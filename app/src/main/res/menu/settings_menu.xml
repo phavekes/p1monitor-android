@@ -10,6 +10,6 @@
         android:id="@+id/about"
         android:contentDescription="@string/settings"
         android:icon="@android:drawable/ic_menu_edit"
-        android:title="@string/about"
+        android:title="@string/About"
         android:visible="true" />
 </menu>

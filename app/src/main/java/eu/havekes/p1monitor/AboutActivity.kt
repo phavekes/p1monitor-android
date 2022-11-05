@@ -3,6 +3,8 @@ package eu.havekes.p1monitor
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.widget.TextView
 
 class AboutActivity : AppCompatActivity() {
@@ -16,5 +18,10 @@ class AboutActivity : AppCompatActivity() {
 
         val version: TextView = findViewById(R.id.version)
         version.text= getString(R.string.app_name) + " " + versionName + " (" + versionCode + ")"
+        val aboutText: TextView = findViewById(R.id.AboutText)
+        val html=getString(R.string.AboutText)
+        aboutText.movementMethod= LinkMovementMethod.getInstance()
+        aboutText.text= Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+
     }
 }
