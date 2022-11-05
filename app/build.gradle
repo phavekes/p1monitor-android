@@ -5,13 +5,13 @@ plugins {
 
 static def generateVersionCode() {
     def result = "git rev-list HEAD --count".execute().text.trim()
-    if(result.empty) throw new RuntimeException("Could not generate versioncode on this platform? Cmd output: ${result.text}")
+    if(result.empty) return 0
     return result.toInteger()
 }
 
 static def generateVersionName() {
     def result = "git describe --tags --dirty".execute().text.trim()
-    if(result.empty) throw new RuntimeException("Could not generate versioncode on this platform? Cmd output: ${result.text}")
+    if(result.empty) return "Unknown"
     return result
 }
 android {
