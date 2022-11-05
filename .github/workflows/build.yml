@@ -10,19 +10,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        submodules: recursive
-    - uses: actions/setup-java@v2
-      with:
-        java-version: 11
-        distribution: 'temurin'
-        cache: 'gradle'
-    - name: Build eu.havekes.p1monitor APK
-      run: bash ./gradlew assembleRelease --stacktrace
-    - name: Upload APK
-      uses: actions/upload-artifact@v1
-      with:
-        name: app-release-unsigned.apk
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Chechout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Check YAML files
+        uses: ibiqlik/action-yamllint@v3
+      - name: Lint markdown file
+        uses: nosborn/github-action-markdown-cli@v2.0.0
+        with:
+          files: .
+      - name: Setup JAVA
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: 'gradle'
+      - name: Build eu.havekes.p1monitor APK
+        run: bash ./gradlew assembleRelease --stacktrace
+      - name: Upload unsigned APK
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-release-unsigned.apk
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
