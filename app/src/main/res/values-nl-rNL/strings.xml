@@ -28,4 +28,9 @@
     <string name="error">Fout</string>
     <string name="AboutText">Deze app wordt gemaakt en onderhouden door &lt;b&gt;Peter Havekes&lt;/b&gt;.&lt;br/&gt;&lt;br/&gt; De P1 Monitor app kan alleen gebruikt worden met de &lt;a href="https://www.ztatz.nl/p1-monitor/"&gt;Ztatz P1 monitor software&lt;/a&gt;.&lt;br/&gt;&lt;br/&gt; Bekijk &lt;a href="https://github.com/phavekes/p1monitor-android/"&gt;de github repo&lt;/a&gt; voor meer informtaie over de app.</string>
     <string name="About">Over</string>
+    <string name="settings_header_auth">API authenticatie</string>
+    <string name="settings_basic_auth_enabled">Inschakelen</string>
+    <string name="settings_basic_auth_user">Gebruikersnaam</string>
+    <string name="settings_basic_auth_password">Wachtwoord</string>
+    <string name="settings_header_basic_auth">Basic Auth</string>
 </resources>

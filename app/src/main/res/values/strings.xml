@@ -27,4 +27,9 @@
     <string name="error">Error</string>
     <string name="AboutText">This app is created and maintained by &lt;b&gt;Peter Havekes&lt;/b&gt;.&lt;br/&gt;&lt;br/&gt; The P1 Monitor app can only be used with the &lt;a href="https://www.ztatz.nl/p1-monitor/"&gt;Ztatz P1 monitor software&lt;/a&gt;.&lt;br/&gt;&lt;br/&gt; See &lt;a href="https://github.com/phavekes/p1monitor-android/"&gt;the github repo&lt;/a&gt; for more information on the app.</string>
     <string name="About">About</string>
+    <string name="settings_header_auth">API authentication</string>
+    <string name="settings_basic_auth_enabled">Enable</string>
+    <string name="settings_basic_auth_user">Username</string>
+    <string name="settings_basic_auth_password">Password</string>
+    <string name="settings_header_basic_auth">Basic Auth</string>
 </resources>

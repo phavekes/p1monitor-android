@@ -8,11 +8,31 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/settings_hostname" />
-        <EditTextPreference
-            android:defaultValue="ABCD1234"
-            android:key="apikey"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/settings_apikey" />
+        <PreferenceCategory app:title="@string/settings_header_auth" >
+            <EditTextPreference
+                    android:defaultValue="ABCD1234"
+                    android:key="apikey"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="@string/settings_apikey" />
+            <PreferenceCategory app:title="@string/settings_header_basic_auth">
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="basic_auth_enabled"
+                    android:title="@string/settings_basic_auth_enabled" />
+                <EditTextPreference
+                    android:defaultValue="user"
+                    android:key="settings_basic_auth_user"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="@string/settings_basic_auth_user" />
+                <EditTextPreference
+                    android:defaultValue="secret"
+                    android:key="settings_basic_auth_password"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:title="@string/settings_basic_auth_password" />
+            </PreferenceCategory>
+    </PreferenceCategory>
     </PreferenceCategory>
 </PreferenceScreen>
