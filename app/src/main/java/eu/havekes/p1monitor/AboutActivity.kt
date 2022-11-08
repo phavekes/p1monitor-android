@@ -12,6 +12,8 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
         val versionCode = BuildConfig.VERSION_CODE
         val versionName = BuildConfig.VERSION_NAME
@@ -23,5 +25,10 @@ class AboutActivity : AppCompatActivity() {
         aboutText.movementMethod= LinkMovementMethod.getInstance()
         aboutText.text= Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
 
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }
