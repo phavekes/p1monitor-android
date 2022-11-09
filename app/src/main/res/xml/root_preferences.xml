@@ -4,34 +4,45 @@
     <PreferenceCategory app:title="@string/settings_header_server" >
         <EditTextPreference
             android:defaultValue="https://server.nl/"
+            android:dialogTitle="@string/settings_hostname"
+            android:inputType="textUri"
             android:key="hostname"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="@string/settings_hostname" />
+            android:title="@string/settings_hostname"
+            app:dialogIcon="@android:drawable/ic_menu_compass"
+            app:dialogMessage="@string/settings_hostname_dialog" />
         <PreferenceCategory app:title="@string/settings_header_auth" >
             <EditTextPreference
-                    android:defaultValue="ABCD1234"
-                    android:key="apikey"
-                    android:selectAllOnFocus="true"
-                    android:singleLine="true"
-                    android:title="@string/settings_apikey" />
-            <PreferenceCategory app:title="@string/settings_header_basic_auth">
+                android:defaultValue="ABCD1234"
+                android:key="apikey"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/settings_apikey"
+                app:dialogMessage="@string/basic_auth_apikey_dialog"
+                />
+            <PreferenceCategory
+                app:icon="@android:drawable/ic_lock_lock"
+                app:title="@string/settings_header_basic_auth">
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="basic_auth_enabled"
-                    android:title="@string/settings_basic_auth_enabled" />
+                    android:title="@string/settings_basic_auth_enabled"
+                    app:summary="@string/dialog_basic_auth_enabled" />
                 <EditTextPreference
                     android:defaultValue="user"
+                    android:inputType="textNoSuggestions"
                     android:key="basic_auth_user"
                     android:selectAllOnFocus="true"
                     android:singleLine="true"
-                    android:title="@string/settings_basic_auth_user" />
+                    android:title="@string/settings_basic_auth_user"
+                    app:dialogMessage="@string/basic_auth_user_dialog" />
                 <EditTextPreference
                     android:defaultValue="secret"
                     android:key="basic_auth_password"
-                    android:selectAllOnFocus="true"
                     android:singleLine="true"
-                    android:title="@string/settings_basic_auth_password" />
+                    android:title="@string/settings_basic_auth_password"
+                    app:dialogMessage="@string/basic_auth_password_dialog" />
             </PreferenceCategory>
     </PreferenceCategory>
     </PreferenceCategory>

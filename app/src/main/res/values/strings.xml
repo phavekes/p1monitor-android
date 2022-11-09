@@ -32,4 +32,13 @@
     <string name="settings_basic_auth_user">Username</string>
     <string name="settings_basic_auth_password">Password</string>
     <string name="settings_header_basic_auth">Basic Auth</string>
+    <string name="basic_auth_user_dialog">Enter the username for basic auth</string>
+    <string name="basic_auth_password_dialog">Enter the paswword for basic auth</string>
+    <string name="basic_auth_apikey_dialog">The API-key as generated in the P1Monitor settings</string>
+    <string name="settings_hostname_dialog">Enter the complete url to the P1Monitor webpage, including http:// or https://</string>
+    <string name="dialog_basic_auth_enabled">If you are using basic authentication to protect your P1Monitor or API (e.g. when using a reverse proxy), you can enable basic authentication here. Also enter the username and password below.</string>
+
+
+
+
 </resources>

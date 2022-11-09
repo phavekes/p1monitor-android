@@ -33,4 +33,13 @@
     <string name="settings_basic_auth_user">Gebruikersnaam</string>
     <string name="settings_basic_auth_password">Wachtwoord</string>
     <string name="settings_header_basic_auth">Basic Auth</string>
+    <string name="basic_auth_user_dialog">Geef de inlognaam voor Basic-Auth</string>
+    <string name="basic_auth_password_dialog">Het wachtwoord voor basic auth</string>
+    <string name="basic_auth_apikey_dialog">De API-key die je hebt gegenereerd in de P1Monitor instellingen</string>
+    <string name="settings_hostname_dialog">Voer de complete url naar de webpagina van de P1Monitor in, inclusief http:// of https://</string>
+    <string name="dialog_basic_auth_enabled">Als je basic-authentication gebruikt om de P1Monitor of API af te schermen (wanneer je bijvoorbeeld een reverse proxy gebruikt) kun je dit hier inschakelen. Vul dan ook de inlognaam en wachtwoord hieronder in.</string>
+
+
+
+
 </resources>
