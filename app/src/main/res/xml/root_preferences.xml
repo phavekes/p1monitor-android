@@ -22,13 +22,13 @@
                     android:title="@string/settings_basic_auth_enabled" />
                 <EditTextPreference
                     android:defaultValue="user"
-                    android:key="settings_basic_auth_user"
+                    android:key="basic_auth_user"
                     android:selectAllOnFocus="true"
                     android:singleLine="true"
                     android:title="@string/settings_basic_auth_user" />
                 <EditTextPreference
                     android:defaultValue="secret"
-                    android:key="settings_basic_auth_password"
+                    android:key="basic_auth_password"
                     android:selectAllOnFocus="true"
                     android:singleLine="true"
                     android:title="@string/settings_basic_auth_password" />

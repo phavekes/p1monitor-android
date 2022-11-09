@@ -18,6 +18,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -75,12 +76,34 @@ interface FinancialMonthApi {
 }
 
 object RetrofitHelper {
-    fun getInstance(baseUrl: String): Retrofit {
-        return Retrofit.Builder().baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            // we need to add converter factory to
-            // convert JSON object to Java object
-            .build()
+    fun getInstance(
+        baseUrl: String,
+        basicAuth: Boolean,
+        basicAuthUser: String,
+        basicAutPassword: String
+    ): Retrofit {
+        if (basicAuth) {
+            val client = OkHttpClient.Builder()
+                .addInterceptor(
+                    BasicAuthInterceptor(
+                        basicAuthUser,
+                        basicAutPassword
+                    )
+                )
+                .build()
+            return Retrofit.Builder().baseUrl(baseUrl)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                // we need to add converter factory to
+                // convert JSON object to Java object
+                .build()
+        } else {
+            return Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                // we need to add converter factory to
+                // convert JSON object to Java object
+                .build()
+        }
     }
 }
 
@@ -123,6 +146,9 @@ class MainActivity : AppCompatActivity() {
         val prefs =  PreferenceManager.getDefaultSharedPreferences(this)
         val baseUrl = prefs.getString("hostname","")
         val apikey = prefs.getString("apikey","").toString()
+        val basicAuth = prefs.getBoolean("basic_auth_enabled",false)
+        val basicAuthUser = prefs.getString("basic_auth_user","").toString()
+        val basicAutPassword = prefs.getString("basic_auth_password","").toString()
 
         val currentPower: TextView = findViewById(R.id.currentPower)
         val productionPower: TextView = findViewById(R.id.productionPower)
@@ -140,11 +166,11 @@ class MainActivity : AppCompatActivity() {
 
         try {
             if (baseUrl != null) {
-                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler)
-                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey)
-                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey)
-                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey)
-                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey)
+                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler,basicAuth,basicAuthUser,basicAutPassword )
+                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
             }
         } catch (e:IllegalArgumentException){
              Log.e("error", e.toString())
@@ -156,6 +182,9 @@ class MainActivity : AppCompatActivity() {
             val prefs =  PreferenceManager.getDefaultSharedPreferences(this)
             val baseUrl = prefs.getString("hostname","")
             val apikey = prefs.getString("apikey","").toString()
+            val basicAuth = prefs.getBoolean("basic_auth_enabled",false)
+            val basicAuthUser = prefs.getString("basic_auth_user","").toString()
+            val basicAutPassword = prefs.getString("basic_auth_password","").toString()
 
             handler.postDelayed(runnable!!, delay.toLong())
             val currentPower: TextView = findViewById(R.id.currentPower)
@@ -172,11 +201,11 @@ class MainActivity : AppCompatActivity() {
             val monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
 
             if (baseUrl != null) {
-                updateCurrent(currentPower, productionPower, baseUrl,apikey, applicationContext, handler )
-                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey)
-                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey)
-                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey)
-                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey)
+                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler,basicAuth,basicAuthUser,basicAutPassword )
+                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
             }
 
         }.also { runnable = it }, delay.toLong())
@@ -186,11 +215,11 @@ class MainActivity : AppCompatActivity() {
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: String, apikey: String, applicationContext: Context, handler: Handler) {
+fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: String, apikey: String, applicationContext: Context, handler: Handler, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val smartmeterApi = RetrofitHelper.getInstance(baseUrl).create(SmartmeterApi::class.java)
+            val smartmeterApi = RetrofitHelper.getInstance(baseUrl,basicAuth,basicAuthUser,basicAutPassword).create(SmartmeterApi::class.java)
             val result = smartmeterApi.getSmartmeter(apikey)
             Log.d("p1monitor: ", result.body().toString())
             if (result.code() == 200) {
@@ -211,11 +240,11 @@ fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: St
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextView, baseUrl: String, apikey: String) {
+fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val powerGasApi = RetrofitHelper.getInstance(baseUrl).create(PowerGasDayApi::class.java)
+            val powerGasApi = RetrofitHelper.getInstance(baseUrl,basicAuth,basicAuthUser,basicAutPassword).create(PowerGasDayApi::class.java)
             val result = powerGasApi.getPowerGas(apikey)
             Log.d("p1monitor: ", result.body().toString())
             if (result.code() == 200) {
@@ -238,11 +267,11 @@ fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextV
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextView, baseUrl: String, apikey: String) {
+fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val powerGasApi = RetrofitHelper.getInstance(baseUrl).create(PowerGasMonthApi::class.java)
+            val powerGasApi = RetrofitHelper.getInstance(baseUrl,basicAuth,basicAuthUser,basicAutPassword).create(PowerGasMonthApi::class.java)
             val result = powerGasApi.getPowerGas(apikey)
             Log.d("p1monitor: ", result.body().toString())
             if (result.code() == 200) {
@@ -265,12 +294,13 @@ fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextVi
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextView, baseUrl: String, apikey: String) {
+fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val financialDayApi = RetrofitHelper.getInstance(baseUrl).create(FinancialDayApi::class.java)
+            val financialDayApi = RetrofitHelper.getInstance(baseUrl,basicAuth,basicAuthUser,basicAutPassword).create(FinancialDayApi::class.java)
             val result = financialDayApi.getFinancial(apikey)
+
             Log.d("p1monitor: ", result.body().toString())
             if (result.code() == 200) {
                 val cost = result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_HIGH!! + result.body()?.get(0)?.CONSUMPTION_COST_ELECTRICITY_LOW!!
@@ -293,11 +323,11 @@ fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextV
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextView, baseUrl: String, apikey: String) {
+fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
-            val financialMonthApi = RetrofitHelper.getInstance(baseUrl).create(FinancialMonthApi::class.java)
+            val financialMonthApi = RetrofitHelper.getInstance(baseUrl,basicAuth,basicAuthUser,basicAutPassword).create(FinancialMonthApi::class.java)
             val result = financialMonthApi.getFinancial(apikey)
             Log.d("p1monitor: ", result.body().toString())
             if (result.code() == 200) {
