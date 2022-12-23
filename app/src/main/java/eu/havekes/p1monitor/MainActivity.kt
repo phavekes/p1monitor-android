@@ -163,21 +163,54 @@ class MainActivity : AppCompatActivity() {
         val monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
         val monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
 
+        val textViewError: TextView = findViewById(R.id.textViewError)
 
         try {
             if (baseUrl != null) {
-                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler,basicAuth,basicAuthUser,basicAutPassword )
-                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
-                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
-                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
-                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                //clear errors
+                textViewError.text = ""
+                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler,basicAuth,basicAuthUser,basicAutPassword,textViewError )
+                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+            } else {
+                textViewError.setText(R.string.error_no_basurl)
             }
         } catch (e:IllegalArgumentException){
              Log.e("error", e.toString())
+             textViewError.setText(e.message)
              Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
         }
     }
     override fun onResume() {
+        val textViewError: TextView = findViewById(R.id.textViewError)
+        val currentPower: TextView = findViewById(R.id.currentPower)
+        val productionPower: TextView = findViewById(R.id.productionPower)
+        val todayPower: TextView = findViewById(R.id.todayPower)
+        val todayProduction: TextView = findViewById(R.id.todayProduction)
+        val todayGas: TextView = findViewById(R.id.todayGas)
+        val monthPower: TextView = findViewById(R.id.monthPower)
+        val monthProduction: TextView = findViewById(R.id.monthProduction)
+        val monthGas: TextView = findViewById(R.id.monthGas)
+        val todayFinancialPower: TextView = findViewById(R.id.todayFinancialPower)
+        val todayFinancialGas: TextView = findViewById(R.id.todayFinancialGas)
+        val monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
+        val monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
+        textViewError.setText("")
+        currentPower.setText(R.string.refreshing)
+        productionPower.setText(R.string.refreshing)
+        todayPower.setText(R.string.refreshing)
+        todayProduction.setText(R.string.refreshing)
+        todayGas.setText(R.string.refreshing)
+        monthPower.setText(R.string.refreshing)
+        monthProduction.setText(R.string.refreshing)
+        monthGas.setText(R.string.refreshing)
+        todayFinancialPower.setText(R.string.refreshing)
+        todayFinancialGas.setText(R.string.refreshing)
+        monthFinancialPower.setText(R.string.refreshing)
+        monthFinancialGas.setText(R.string.refreshing)
+
         handler.postDelayed(Runnable {
             val prefs =  PreferenceManager.getDefaultSharedPreferences(this)
             val baseUrl = prefs.getString("hostname","")
@@ -200,12 +233,18 @@ class MainActivity : AppCompatActivity() {
             val monthFinancialPower: TextView = findViewById(R.id.monthFinancialPower)
             val monthFinancialGas: TextView = findViewById(R.id.monthFinancialGas)
 
+            val textViewError: TextView = findViewById(R.id.textViewError)
+
+
             if (baseUrl != null) {
-                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler,basicAuth,basicAuthUser,basicAutPassword )
-                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
-                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
-                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
-                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword)
+                textViewError.text=""
+                updateCurrent(currentPower, productionPower, baseUrl, apikey,applicationContext, handler,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateToday(todayPower, todayProduction, todayGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateMonth(monthPower, monthProduction, monthGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateFinancialToday(todayFinancialPower, todayFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+                updateFinancialMonth(monthFinancialPower, monthFinancialGas, baseUrl, apikey,basicAuth,basicAuthUser,basicAutPassword,textViewError)
+            } else {
+                textViewError.setText(R.string.error_no_basurl)
             }
 
         }.also { runnable = it }, delay.toLong())
@@ -215,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: String, apikey: String, applicationContext: Context, handler: Handler, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
+fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: String, apikey: String, applicationContext: Context, handler: Handler, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String, textViewError: TextView ) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
@@ -226,10 +265,12 @@ fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: St
                 currentPower.text = result.body()?.get(0)?.CONSUMPTION_W.toString() + " Watt";
                 productionPower.text = result.body()?.get(0)?.PRODUCTION_W.toString() + " Watt"
             } else {
+                displayError(textViewError,result.code())
                 throw IllegalArgumentException("Communication error")
             }
         } catch (e: java.lang.Exception){
             Log.e("error", e.toString())
+            textViewError.setText(e.message)
             Toast.makeText(applicationContext,"Could not communicate with API. Check settings",Toast.LENGTH_SHORT).show()
             currentPower.text = "Error"
             productionPower.text = "Error"
@@ -240,7 +281,7 @@ fun updateCurrent(currentPower: TextView, productionPower: TextView, baseUrl: St
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
+fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String, textViewError: TextView) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
@@ -252,6 +293,7 @@ fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextV
                 todayProduction.text = result.body()?.get(0)?.PRODUCTION_DELTA_KWH.toString() + " kWh"
                 todayGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
             } else {
+                displayError(textViewError,result.code())
                 todayPower.text = "Error"
                 todayProduction.text = "Error"
                 todayGas.text = "Error"
@@ -267,7 +309,7 @@ fun updateToday(todayPower: TextView, todayProduction: TextView, todayGas: TextV
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
+fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String, textViewError: TextView) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
@@ -279,6 +321,7 @@ fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextVi
                 monthProduction.text = result.body()?.get(0)?.PRODUCTION_DELTA_KWH.toString() + " kWh"
                 monthGas.text = result.body()?.get(0)?.CONSUMPTION_GAS_DELTA_M3.toString() + " m3"
             } else {
+                displayError(textViewError,result.code())
                 monthPower.text = "Error"
                 monthProduction.text = "Error"
                 monthGas.text = "Error"
@@ -294,7 +337,7 @@ fun updateMonth(monthPower: TextView, monthProduction:TextView, monthGas: TextVi
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
+fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String, textViewError: TextView) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
@@ -310,6 +353,7 @@ fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextV
                 val roundoffcostgas = (costsGas * 100.0).roundToInt() / 100.0
                 todayFinancialGas.text = "€" + roundoffcostgas.toString()
             } else {
+                displayError(textViewError,result.code())
                 todayFinancialPower.text = "Error"
                 todayFinancialGas.text = "Error"
             }
@@ -323,7 +367,7 @@ fun updateFinancialToday(todayFinancialPower: TextView, todayFinancialGas: TextV
 
 @SuppressLint("SetTextI18n")
 @OptIn(DelicateCoroutinesApi::class)
-fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String) {
+fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextView, baseUrl: String, apikey: String, basicAuth: Boolean, basicAuthUser: String, basicAutPassword: String, textViewError: TextView) {
     // launching a new coroutine
     GlobalScope.launch(Dispatchers.Main) {
         try {
@@ -340,6 +384,7 @@ fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextV
                 val roundoffcostgas = (costsGas * 100.0).roundToInt() / 100.0
                 monthFinancialGas.text = "€" + roundoffcostgas.toString()
             } else {
+                displayError(textViewError,result.code())
                 monthFinancialPower.text = "Error"
                 monthFinancialGas.text = "Error"
             }
@@ -349,4 +394,15 @@ fun updateFinancialMonth(monthFinancialPower: TextView, monthFinancialGas: TextV
             monthFinancialGas.text = "Error"
         }
     }
+}
+
+fun displayError(textViewError: TextView,result: Int){
+    Log.e("p1monitor","HTTP status "+result)
+    when (result) {
+        401 -> textViewError.setText("Authentication failure ("+result.toString()+")")
+        else -> {
+            textViewError.setText("HTTP error " +result.toString() + " while accessing API")
+        }
+    }
+
 }
